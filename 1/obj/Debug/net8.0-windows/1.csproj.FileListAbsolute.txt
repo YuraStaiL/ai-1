@@ -1,0 +1,16 @@
+E:\Study\AI_labs\1\bin\Debug\net8.0-windows\1.exe
+E:\Study\AI_labs\1\bin\Debug\net8.0-windows\1.deps.json
+E:\Study\AI_labs\1\bin\Debug\net8.0-windows\1.runtimeconfig.json
+E:\Study\AI_labs\1\bin\Debug\net8.0-windows\1.dll
+E:\Study\AI_labs\1\bin\Debug\net8.0-windows\1.pdb
+E:\Study\AI_labs\1\obj\Debug\net8.0-windows\_1.Form1.resources
+E:\Study\AI_labs\1\obj\Debug\net8.0-windows\1.csproj.GenerateResource.cache
+E:\Study\AI_labs\1\obj\Debug\net8.0-windows\1.GeneratedMSBuildEditorConfig.editorconfig
+E:\Study\AI_labs\1\obj\Debug\net8.0-windows\1.AssemblyInfoInputs.cache
+E:\Study\AI_labs\1\obj\Debug\net8.0-windows\1.AssemblyInfo.cs
+E:\Study\AI_labs\1\obj\Debug\net8.0-windows\1.csproj.CoreCompileInputs.cache
+E:\Study\AI_labs\1\obj\Debug\net8.0-windows\1.dll
+E:\Study\AI_labs\1\obj\Debug\net8.0-windows\refint\1.dll
+E:\Study\AI_labs\1\obj\Debug\net8.0-windows\1.pdb
+E:\Study\AI_labs\1\obj\Debug\net8.0-windows\1.genruntimeconfig.cache
+E:\Study\AI_labs\1\obj\Debug\net8.0-windows\ref\1.dll
