@@ -34,6 +34,10 @@
             txtThreshold = new TextBox();
             label1 = new Label();
             button2 = new Button();
+            sectorsNumber = new TextBox();
+            label2 = new Label();
+            button3 = new Button();
+            segmentInfoLabel = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -98,11 +102,54 @@
             button2.UseVisualStyleBackColor = true;
             button2.Click += btnRestoreOriginalImg_Click;
             // 
+            // sectorsNumber
+            // 
+            sectorsNumber.Font = new Font("Segoe UI", 20F);
+            sectorsNumber.Location = new Point(862, 172);
+            sectorsNumber.Name = "sectorsNumber";
+            sectorsNumber.Size = new Size(179, 43);
+            sectorsNumber.TabIndex = 6;
+            sectorsNumber.Text = "5";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 15F);
+            label2.Location = new Point(862, 144);
+            label2.Name = "label2";
+            label2.Size = new Size(173, 28);
+            label2.TabIndex = 7;
+            label2.Text = "Number of sectors";
+            // 
+            // button3
+            // 
+            button3.Location = new Point(862, 101);
+            button3.Name = "button3";
+            button3.Size = new Size(179, 40);
+            button3.TabIndex = 8;
+            button3.Text = "Segment";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += buttonSegment_Click;
+            // 
+            // segmentInfoLabel
+            // 
+            segmentInfoLabel.AutoSize = true;
+            segmentInfoLabel.Font = new Font("Segoe UI", 15F);
+            segmentInfoLabel.Location = new Point(862, 241);
+            segmentInfoLabel.Name = "segmentInfoLabel";
+            segmentInfoLabel.Size = new Size(65, 28);
+            segmentInfoLabel.TabIndex = 9;
+            segmentInfoLabel.Text = "label3";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1421, 785);
+            Controls.Add(segmentInfoLabel);
+            Controls.Add(button3);
+            Controls.Add(label2);
+            Controls.Add(sectorsNumber);
             Controls.Add(button2);
             Controls.Add(label1);
             Controls.Add(txtThreshold);
@@ -125,5 +172,9 @@
         private TextBox txtThreshold;
         private Label label1;
         private Button button2;
+        private TextBox sectorsNumber;
+        private Label label2;
+        private Button button3;
+        private Label segmentInfoLabel;
     }
 }

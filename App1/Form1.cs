@@ -1,5 +1,5 @@
-using System.Drawing;
-using System.Windows.Forms;
+
+using System.Drawing.Drawing2D;
 
 namespace App1
 {
@@ -77,52 +77,38 @@ namespace App1
 
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
-            if (isCropping)
+            isCropping = false;
+
+            if (cropRect.Width > 0 && cropRect.Height > 0)
             {
-                isCropping = false;
-                Rectangle rec = new Rectangle(startPoint.X, startPoint.Y, Math.Abs(e.X - startPoint.X), Math.Abs(e.Y - startPoint.Y));
-                cropRect = rec;
-                CropImage(); // Викликаємо функцію обрізки після завершення виділення
+                CropImage();
             }
         }
 
         private void CropImage()
         {
-            if (pictureBox1.Image == null || cropRect == Rectangle.Empty)
-                return;
+            if (pictureBox1.Image != null)
+            {
+                // Convert selection rectangle from PictureBox coordinates to image coordinates
+                var image = pictureBox1.Image;
+                var scaleX = (float)image.Width / pictureBox1.Width;
+                var scaleY = (float)image.Height / pictureBox1.Height;
+                var newImageRec = new Rectangle(
+                    (int)(cropRect.X * scaleX),
+                    (int)(cropRect.Y * scaleY),
+                    (int)(cropRect.Width * scaleX),
+                    (int)(cropRect.Height * scaleY));
 
-            // Створюємо тимчасову Bitmap для обрізки
-            Bitmap sourceBitmap = new Bitmap(pictureBox1.Image, pictureBox1.Width, pictureBox1.Height);
-            Graphics g = pictureBox1.CreateGraphics();
-            pictureBox1.Refresh();
+                // Crop the image
+                Bitmap croppedImage = new Bitmap(newImageRec.Width, newImageRec.Height);
+                using (Graphics g = Graphics.FromImage(croppedImage))
+                {
+                    g.DrawImage(image, new Rectangle(0, 0, croppedImage.Width, croppedImage.Height), newImageRec, GraphicsUnit.Pixel);
+                }
 
-            g.DrawImage(sourceBitmap, new Rectangle(0, 0, pictureBox1.Width, pictureBox1.Height), cropRect, GraphicsUnit.Pixel);
-            sourceBitmap.Dispose();
-            //pictureBox1.Image.Dispose();
-
-            var path = Environment.CurrentDirectory.ToString();
-            ms = new System.IO.MemoryStream();
-            pictureBox1.Image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-            byte[] ar = new byte[ms.Length];
-
-            var timeout = ms.WriteAsync(ar, 0, ar.Length);
-
-            //pictureBox1.Image = sourceBitmap.Clone(
-            //    new Rectangle(0, 0, sourceBitmap.Width, sourceBitmap.Height),
-            //    System.Drawing.Imaging.PixelFormat.DontCare
-            //);
-
-            // Перевіряємо, чи координати обрізки не виходять за межі зображення
-            //cropRect = Rectangle.Intersect(cropRect, new Rectangle(0, 0, pictureBox1.Image.Width, pictureBox1.Image.Height));
-
-            //// Обрізаємо зображення за допомогою функції Clone
-            //if (cropRect.Width > 0 && cropRect.Height > 0)
-            //{
-            //    Bitmap croppedBitmap = sourceBitmap.Clone(cropRect, sourceBitmap.PixelFormat);
-            //    pictureBox1.Image = croppedBitmap;
-            //}
-
-
+                // Replace the old image with the cropped image
+                pictureBox1.Image = croppedImage;
+            }
         }
 
         private void btnConvert_Click(object sender, EventArgs e)
@@ -179,6 +165,107 @@ namespace App1
             // Відображаємо перетворене зображення в PictureBox
             pictureBox1.Image = bmp;
         }
+
+        private void buttonSegment_Click(object sender, EventArgs e)
+        {
+            ProcessImageAndDrawSectors();
+        }
+
+        public List<GraphicsPath> DivideImageIntoSectors(int numSectors, Size imageSize)
+        {
+            List<GraphicsPath> sectors = new List<GraphicsPath>();
+            Point topRight = new Point(imageSize.Width - 1, 0);
+
+            for (int i = 0; i < numSectors; i++)
+            {
+                GraphicsPath path = new GraphicsPath();
+
+                // Define the sector's angles and points
+                float angleStep = 90f / numSectors;
+                float startAngle = i * angleStep;
+                float endAngle = startAngle + angleStep;
+
+                PointF point1 = new PointF(
+                    (float)(imageSize.Width * Math.Cos(Math.PI * startAngle / 180)),
+                    (float)(imageSize.Height * Math.Sin(Math.PI * startAngle / 180))
+                );
+
+                PointF point2 = new PointF(
+                    (float)(imageSize.Width * Math.Cos(Math.PI * endAngle / 180)),
+                    (float)(imageSize.Height * Math.Sin(Math.PI * endAngle / 180))
+                );
+
+                // Add triangle points for the sector
+                path.AddPolygon(new PointF[] { topRight, point1, point2 });
+                sectors.Add(path);
+            }
+
+            return sectors;
+        }
+
+        private void DrawSectorLines(Bitmap image, int numSectors)
+        {
+            // Create a graphics object from the image
+            using (Graphics g = Graphics.FromImage(image))
+            {
+                // Set the pen color and thickness for drawing
+                Pen pen = new Pen(Color.Red, 2);
+
+                // Define the starting point (top-right corner of the image)
+                Point topRight = new Point(image.Width - 1, 0);
+
+                // Calculate the angle step for the number of sectors
+                float angleStep = 90f / numSectors;
+
+                for (int i = 1; i < numSectors; i++)
+                {
+                    // Calculate the angle for the current line
+                    float angle = i * angleStep;
+
+                    // Calculate the end point of the line based on the angle
+                    float x = (float)(image.Width - 1 - image.Width * Math.Cos(Math.PI * angle / 180));
+                    float y = (float)(image.Height * Math.Sin(Math.PI * angle / 180));
+
+                    Point endPoint = new Point((int)x, (int)y);
+
+                    // Draw the line
+                    g.DrawLine(pen, topRight, endPoint);
+                }
+            }
+        }
+
+        private void ProcessImageAndDrawSectors()
+        {
+
+            // Convert it to grayscale (if necessary)
+            Bitmap grayscaleImage = new Bitmap(pictureBox1.Image);
+
+            // Number of sectors (get this from user input or set as needed)
+            int numSectors = 4; // Example value
+
+            // Draw sector lines on the grayscale image
+            DrawSectorLines(grayscaleImage, numSectors);
+
+            // Update the pictureBox with the modified image
+            pictureBox1.Image = grayscaleImage;
+
+            // Optional: process sectors to count black pixels
+            var sectors = DivideImageIntoSectors(numSectors, grayscaleImage.Size);
+
+            //for (int i = 0; i < sectors.Count; i++)
+            //{
+            //    int blackPixels = CountBlackPixelsInSector(grayscaleImage, sectors[i]);
+            //    Console.WriteLine($"Sector {i + 1}: {blackPixels} black pixels");
+            //}
+        }
+
+        private int CountBlackPixels(PointF start, PointF end)
+        {
+            // Implement the method to count black pixels within the sector
+            // This requires more advanced geometric calculations to determine which pixels are within each sector
+            return 0; // Placeholder
+        }
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
