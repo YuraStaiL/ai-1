@@ -37,7 +37,8 @@
             sectorsNumber = new TextBox();
             label2 = new Label();
             button3 = new Button();
-            segmentInfoLabel = new Label();
+            logRichTextBox = new RichTextBox();
+            button4 = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -53,9 +54,9 @@
             // 
             // pictureBox1
             // 
-            pictureBox1.Location = new Point(60, 44);
+            pictureBox1.Location = new Point(12, 12);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(529, 503);
+            pictureBox1.Size = new Size(314, 314);
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
             pictureBox1.Paint += pictureBox1_Paint;
@@ -80,7 +81,7 @@
             txtThreshold.Name = "txtThreshold";
             txtThreshold.Size = new Size(179, 43);
             txtThreshold.TabIndex = 3;
-            txtThreshold.Text = "123";
+            txtThreshold.Text = "177";
             // 
             // label1
             // 
@@ -109,7 +110,7 @@
             sectorsNumber.Name = "sectorsNumber";
             sectorsNumber.Size = new Size(179, 43);
             sectorsNumber.TabIndex = 6;
-            sectorsNumber.Text = "5";
+            sectorsNumber.Text = "6";
             // 
             // label2
             // 
@@ -131,22 +132,31 @@
             button3.UseVisualStyleBackColor = true;
             button3.Click += buttonSegment_Click;
             // 
-            // segmentInfoLabel
+            // logRichTextBox
             // 
-            segmentInfoLabel.AutoSize = true;
-            segmentInfoLabel.Font = new Font("Segoe UI", 15F);
-            segmentInfoLabel.Location = new Point(862, 241);
-            segmentInfoLabel.Name = "segmentInfoLabel";
-            segmentInfoLabel.Size = new Size(65, 28);
-            segmentInfoLabel.TabIndex = 9;
-            segmentInfoLabel.Text = "label3";
+            logRichTextBox.Location = new Point(677, 293);
+            logRichTextBox.Name = "logRichTextBox";
+            logRichTextBox.Size = new Size(364, 254);
+            logRichTextBox.TabIndex = 10;
+            logRichTextBox.Text = "";
+            // 
+            // button4
+            // 
+            button4.Location = new Point(862, 236);
+            button4.Name = "button4";
+            button4.Size = new Size(179, 40);
+            button4.TabIndex = 11;
+            button4.Text = "Fill Segment";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += buttonFillSegment_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1421, 785);
-            Controls.Add(segmentInfoLabel);
+            ClientSize = new Size(1088, 586);
+            Controls.Add(button4);
+            Controls.Add(logRichTextBox);
             Controls.Add(button3);
             Controls.Add(label2);
             Controls.Add(sectorsNumber);
@@ -175,6 +185,7 @@
         private TextBox sectorsNumber;
         private Label label2;
         private Button button3;
-        private Label segmentInfoLabel;
+        private RichTextBox logRichTextBox;
+        private Button button4;
     }
 }

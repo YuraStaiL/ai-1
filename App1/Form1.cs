@@ -168,42 +168,93 @@ namespace App1
 
         private void buttonSegment_Click(object sender, EventArgs e)
         {
-            ProcessImageAndDrawSectors();
+            int numSectors = 0;
+            int.TryParse(sectorsNumber.Text, out numSectors);
+
+            ProcessImageAndDrawSectors(numSectors);
+        }
+
+        private void buttonFillSegment_Click(object sender, EventArgs e)
+        {
+            int numSectors = 0;
+            int.TryParse(sectorsNumber.Text, out numSectors);
+
+            ProcessFillDrawSectors(numSectors);
         }
 
         public List<GraphicsPath> DivideImageIntoSectors(int numSectors, Size imageSize)
         {
             List<GraphicsPath> sectors = new List<GraphicsPath>();
+
+            // Define the top-right corner (origin point for the sectors)
             Point topRight = new Point(imageSize.Width - 1, 0);
 
-            for (int i = 0; i < numSectors; i++)
+            // Calculate the angle step for the number of sectors (90 degrees)
+            float angleStep = 90f / numSectors;
+
+            // Create a list of points that will define the boundary lines between sectors
+            List<Point> sectorPoints = new List<Point>();
+            sectorPoints.Add(new Point(imageSize.Width - 1, imageSize.Height));  // Start from the bottom-right corner
+
+            for (int i = 1; i < numSectors; i++)
             {
-                GraphicsPath path = new GraphicsPath();
+                // Calculate the angle for the current sector boundary
+                float angle = i * angleStep;
 
-                // Define the sector's angles and points
-                float angleStep = 90f / numSectors;
-                float startAngle = i * angleStep;
-                float endAngle = startAngle + angleStep;
+                // Calculate the intersection of the boundary with the image borders
+                Point endPoint = CalculateIntersectionWithImageBorder(angle, imageSize.Width, imageSize.Height);
 
-                PointF point1 = new PointF(
-                    (float)(imageSize.Width * Math.Cos(Math.PI * startAngle / 180)),
-                    (float)(imageSize.Height * Math.Sin(Math.PI * startAngle / 180))
-                );
+                // Add the intersection point to the list
+                sectorPoints.Add(endPoint);
+            }
 
-                PointF point2 = new PointF(
-                    (float)(imageSize.Width * Math.Cos(Math.PI * endAngle / 180)),
-                    (float)(imageSize.Height * Math.Sin(Math.PI * endAngle / 180))
-                );
+            // Finally, add the bottom-left corner of the image to close the last sector
+            sectorPoints.Add(new Point(0, 0));
 
-                // Add triangle points for the sector
-                path.AddPolygon(new PointF[] { topRight, point1, point2 });
-                sectors.Add(path);
+            // Now create each sector by connecting the top-right corner to two consecutive points in the list
+            for (int i = 0; i < sectorPoints.Count - 1; i++)
+            {
+                GraphicsPath sectorPath = new GraphicsPath();
+                sectorPath.StartFigure();
+                sectorPath.AddLine(topRight, sectorPoints[i]);    // Line from top-right to the first point
+                sectorPath.AddLine(sectorPoints[i], sectorPoints[i + 1]);  // Line between two consecutive points
+                sectorPath.AddLine(sectorPoints[i + 1], topRight);  // Line back to top-right
+                sectorPath.CloseFigure();
+                sectors.Add(sectorPath);
             }
 
             return sectors;
         }
 
-        private void DrawSectorLines(Bitmap image, int numSectors)
+        public Point CalculateIntersectionWithImageBorder(float angle, int imageWidth, int imageHeight, ref bool isHaveLeftCornerPoint)
+        {
+            // Convert the angle from degrees to radians for calculation
+            double radians = angle * Math.PI / 180.0;
+
+            // Determine the end point based on which border (bottom or left) the line intersects
+            if (radians == Math.PI / 2)  // Special case: if the angle is exactly 90 degrees, the line is vertical
+            {
+                return new Point(0, imageHeight - 1); // Bottom-left corner
+            }
+            else
+            {
+                // Calculate x and y distances based on trigonometry
+                double tan = Math.Tan(radians);
+
+                // Calculate the intersection with the bottom edge of the image
+                int xBottom = (int)(imageHeight * tan);
+                if (xBottom <= imageWidth - 1)  // If the intersection is within the width of the image
+                {
+                    return new Point(imageWidth - 1 - xBottom, imageHeight - 1);
+                }
+
+                // Otherwise, calculate the intersection with the left edge of the image
+                int yLeft = (int)((imageWidth - 1) / tan);
+                return new Point(0, yLeft);
+            }
+        }
+
+        public void DrawSectorLines(Bitmap image, int numSectors)
         {
             // Create a graphics object from the image
             using (Graphics g = Graphics.FromImage(image))
@@ -219,29 +270,57 @@ namespace App1
 
                 for (int i = 1; i < numSectors; i++)
                 {
-                    // Calculate the angle for the current line
+                    // Calculate the angle for the current line (in degrees)
                     float angle = i * angleStep;
 
-                    // Calculate the end point of the line based on the angle
-                    float x = (float)(image.Width - 1 - image.Width * Math.Cos(Math.PI * angle / 180));
-                    float y = (float)(image.Height * Math.Sin(Math.PI * angle / 180));
+                    // Calculate the intersection of the line with the image borders
+                    Point endPoint = CalculateIntersectionWithImageBorder(angle, image.Width, image.Height);
 
-                    Point endPoint = new Point((int)x, (int)y);
-
-                    // Draw the line
+                    // Draw the line from the top-right corner to the calculated intersection point
                     g.DrawLine(pen, topRight, endPoint);
                 }
             }
         }
 
-        private void ProcessImageAndDrawSectors()
+        public void findSectorsPoints(Bitmap image, int numSectors)
+        {
+            // Create a graphics object from the image
+            using (Graphics g = Graphics.FromImage(image))
+            {
+                // Set the pen color and thickness for drawing
+                Pen pen = new Pen(Color.Red, 2);
+
+                // Define the starting point (top-right corner of the image)
+                Point topRight = new Point(image.Width - 1, 0);
+
+                // Calculate the angle step for the number of sectors
+                float angleStep = 90f / numSectors;
+
+                for (int i = 1; i < numSectors; i++)
+                {
+                    // Calculate the angle for the current line (in degrees)
+                    float angle = i * angleStep;
+
+                    // Calculate the intersection of the line with the image borders
+                    Point endPoint = CalculateIntersectionWithImageBorder(angle, image.Width, image.Height);
+
+                    // Draw the line from the top-right corner to the calculated intersection point
+                    g.DrawLine(pen, topRight, endPoint);
+                }
+            }
+        }
+
+        void outToLog(string output)
+        {
+            logRichTextBox.AppendText("\r\n" + output);
+            logRichTextBox.ScrollToCaret();
+        }
+
+        private void ProcessImageAndDrawSectors(int numSectors)
         {
 
             // Convert it to grayscale (if necessary)
             Bitmap grayscaleImage = new Bitmap(pictureBox1.Image);
-
-            // Number of sectors (get this from user input or set as needed)
-            int numSectors = 4; // Example value
 
             // Draw sector lines on the grayscale image
             DrawSectorLines(grayscaleImage, numSectors);
@@ -251,19 +330,82 @@ namespace App1
 
             // Optional: process sectors to count black pixels
             var sectors = DivideImageIntoSectors(numSectors, grayscaleImage.Size);
+            Random r = new Random();
+            Color[] sectorColors = { Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Magenta };
+            int[] blackPixels = new int[sectors.Count];
+            for (int i = 0; i < sectors.Count; i++)
+            {
 
-            //for (int i = 0; i < sectors.Count; i++)
-            //{
-            //    int blackPixels = CountBlackPixelsInSector(grayscaleImage, sectors[i]);
-            //    Console.WriteLine($"Sector {i + 1}: {blackPixels} black pixels");
-            //}
+                int blackPixelsCnt = CountBlackPixelsInSector(grayscaleImage, sectors[i]);
+                blackPixels[i] = blackPixelsCnt;
+                outToLog($"Sectors {i + 1}: {blackPixelsCnt} black pixels");
+            }
+
+            pictureBox1.Image = grayscaleImage;
         }
 
-        private int CountBlackPixels(PointF start, PointF end)
+        private void ProcessFillDrawSectors(int numSectors)
         {
-            // Implement the method to count black pixels within the sector
-            // This requires more advanced geometric calculations to determine which pixels are within each sector
-            return 0; // Placeholder
+
+            // Convert it to grayscale (if necessary)
+            Bitmap grayscaleImage = new Bitmap(pictureBox1.Image);
+
+            // Draw sector lines on the grayscale image
+            DrawSectorLines(grayscaleImage, numSectors);
+
+            // Update the pictureBox with the modified image
+            pictureBox1.Image = grayscaleImage;
+
+            // Optional: process sectors to count black pixels
+            var sectors = DivideImageIntoSectors(numSectors, grayscaleImage.Size);
+            Random r = new Random();
+            Color[] sectorColors = { Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Magenta };
+
+            for (int i = 0; i < sectors.Count; i++)
+            {
+
+                fillSector(grayscaleImage, sectors[i], Color.FromArgb(r.Next(0, 256), r.Next(0, 256), r.Next(0, 256)));
+            }
+
+            pictureBox1.Image = grayscaleImage;
+        }
+
+        public int CountBlackPixelsInSector(Bitmap image, GraphicsPath sector)
+        {
+            int blackPixelCount = 0;
+
+            for (int y = 0; y < image.Height; y++)
+            {
+                for (int x = 0; x < image.Width; x++)
+                {
+                    if (sector.IsVisible(x, y))
+                    {
+                        Color pixelColor = image.GetPixel(x, y);
+
+                        if (pixelColor.ToArgb() == Color.Black.ToArgb())
+                        {
+                            blackPixelCount++;
+                        }
+                    }
+                }
+            }
+
+            return blackPixelCount;
+        }
+
+        public void fillSector(Bitmap image, GraphicsPath sector, Color highlightColor)
+        {
+            for (int y = 0; y < image.Height; y++)
+            {
+                for (int x = 0; x < image.Width; x++)
+                {
+                    if (sector.IsVisible(x, y))
+                    {
+                        image.SetPixel(x, y, highlightColor);
+                    }
+                }
+            }
+
         }
 
 
