@@ -1,5 +1,6 @@
 
 using System.Drawing.Drawing2D;
+using System.Linq;
 
 namespace App1
 {
@@ -191,34 +192,50 @@ namespace App1
 
             // Calculate the angle step for the number of sectors (90 degrees)
             float angleStep = 90f / numSectors;
-
+            bool isHaveLeftCornerPoint = false;
             // Create a list of points that will define the boundary lines between sectors
             List<Point> sectorPoints = new List<Point>();
             sectorPoints.Add(new Point(imageSize.Width - 1, imageSize.Height));  // Start from the bottom-right corner
 
             for (int i = 1; i < numSectors; i++)
             {
+                bool defaultHaveLeftCornerPoint = isHaveLeftCornerPoint;
                 // Calculate the angle for the current sector boundary
                 float angle = i * angleStep;
 
                 // Calculate the intersection of the boundary with the image borders
-                Point endPoint = CalculateIntersectionWithImageBorder(angle, imageSize.Width, imageSize.Height);
+                Point endPoint = CalculateIntersectionWithImageBorder(angle, imageSize.Width, imageSize.Height, ref isHaveLeftCornerPoint);
+                if (defaultHaveLeftCornerPoint != isHaveLeftCornerPoint)
+                {
+                    sectorPoints.Add(new Point(0, imageSize.Height));
+                }
+                else
+                {
+                    sectorPoints.Add(endPoint);
+                }
 
                 // Add the intersection point to the list
                 sectorPoints.Add(endPoint);
             }
 
+            if (!isHaveLeftCornerPoint)
+            {
+                sectorPoints.Add(new Point(0, imageSize.Height));
+            }
+
             // Finally, add the bottom-left corner of the image to close the last sector
+            sectorPoints.Add(new Point(0, 0));
             sectorPoints.Add(new Point(0, 0));
 
             // Now create each sector by connecting the top-right corner to two consecutive points in the list
-            for (int i = 0; i < sectorPoints.Count - 1; i++)
+            for (int i = 0; i < sectorPoints.Count - 2; i=i+2)
             {
                 GraphicsPath sectorPath = new GraphicsPath();
                 sectorPath.StartFigure();
                 sectorPath.AddLine(topRight, sectorPoints[i]);    // Line from top-right to the first point
                 sectorPath.AddLine(sectorPoints[i], sectorPoints[i + 1]);  // Line between two consecutive points
-                sectorPath.AddLine(sectorPoints[i + 1], topRight);  // Line back to top-right
+                sectorPath.AddLine(sectorPoints[i + 1], sectorPoints[i + 2]);  // Line between two consecutive points
+                sectorPath.AddLine(sectorPoints[i + 2], topRight);  // Line back to top-right
                 sectorPath.CloseFigure();
                 sectors.Add(sectorPath);
             }
@@ -246,6 +263,8 @@ namespace App1
                 if (xBottom <= imageWidth - 1)  // If the intersection is within the width of the image
                 {
                     return new Point(imageWidth - 1 - xBottom, imageHeight - 1);
+                } else if (!isHaveLeftCornerPoint) {
+                    isHaveLeftCornerPoint = true;
                 }
 
                 // Otherwise, calculate the intersection with the left edge of the image
@@ -264,7 +283,7 @@ namespace App1
 
                 // Define the starting point (top-right corner of the image)
                 Point topRight = new Point(image.Width - 1, 0);
-
+                bool isHaveLeftCornerPoint = false;
                 // Calculate the angle step for the number of sectors
                 float angleStep = 90f / numSectors;
 
@@ -274,7 +293,7 @@ namespace App1
                     float angle = i * angleStep;
 
                     // Calculate the intersection of the line with the image borders
-                    Point endPoint = CalculateIntersectionWithImageBorder(angle, image.Width, image.Height);
+                    Point endPoint = CalculateIntersectionWithImageBorder(angle, image.Width, image.Height, ref isHaveLeftCornerPoint);
 
                     // Draw the line from the top-right corner to the calculated intersection point
                     g.DrawLine(pen, topRight, endPoint);
@@ -292,6 +311,7 @@ namespace App1
 
                 // Define the starting point (top-right corner of the image)
                 Point topRight = new Point(image.Width - 1, 0);
+                bool isHaveLeftCornerPoint = false;
 
                 // Calculate the angle step for the number of sectors
                 float angleStep = 90f / numSectors;
@@ -302,7 +322,7 @@ namespace App1
                     float angle = i * angleStep;
 
                     // Calculate the intersection of the line with the image borders
-                    Point endPoint = CalculateIntersectionWithImageBorder(angle, image.Width, image.Height);
+                    Point endPoint = CalculateIntersectionWithImageBorder(angle, image.Width, image.Height, ref isHaveLeftCornerPoint);
 
                     // Draw the line from the top-right corner to the calculated intersection point
                     g.DrawLine(pen, topRight, endPoint);
@@ -338,8 +358,37 @@ namespace App1
 
                 int blackPixelsCnt = CountBlackPixelsInSector(grayscaleImage, sectors[i]);
                 blackPixels[i] = blackPixelsCnt;
-                outToLog($"Sectors {i + 1}: {blackPixelsCnt} black pixels");
             }
+
+            string vector = String.Join(", ", blackPixels);
+            vector = $"vector: ({vector})";
+
+            outToLog(vector);
+            int sum = blackPixels.Sum();
+            float[] sumNormalize = new float[sectors.Count];
+
+            for (int i = 0; i < sectors.Count; i++)
+            {
+                sumNormalize[i] = (float) blackPixels[i] / sum;
+            }
+
+            string sumNormalizeVector = String.Join(", ", sumNormalize);
+            sumNormalizeVector = $"FarynaS1 - normalize by sum: ({sumNormalizeVector})";
+
+            outToLog(sumNormalizeVector);
+
+            float[] maxNormalize = new float[sectors.Count];
+            int maxValue = blackPixels.Max();
+
+            for (int i = 0; i < sectors.Count; i++)
+            {
+                maxNormalize[i] = (float)blackPixels[i] / maxValue;
+            }
+
+            string maxNormalizeVector = String.Join(", ", maxNormalize);
+            maxNormalizeVector = $"FarynaM1 - normalize by max: ({maxNormalizeVector})";
+
+            outToLog(maxNormalizeVector);
 
             pictureBox1.Image = grayscaleImage;
         }

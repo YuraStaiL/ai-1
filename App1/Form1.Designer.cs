@@ -134,9 +134,10 @@
             // 
             // logRichTextBox
             // 
-            logRichTextBox.Location = new Point(677, 293);
+            logRichTextBox.Font = new Font("Segoe UI", 11F);
+            logRichTextBox.Location = new Point(492, 293);
             logRichTextBox.Name = "logRichTextBox";
-            logRichTextBox.Size = new Size(364, 254);
+            logRichTextBox.Size = new Size(549, 254);
             logRichTextBox.TabIndex = 10;
             logRichTextBox.Text = "";
             // 
