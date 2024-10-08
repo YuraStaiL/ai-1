@@ -39,6 +39,7 @@
             button3 = new Button();
             logRichTextBox = new RichTextBox();
             button4 = new Button();
+            AddClass = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -151,11 +152,22 @@
             button4.UseVisualStyleBackColor = true;
             button4.Click += buttonFillSegment_Click;
             // 
+            // AddClass
+            // 
+            AddClass.Location = new Point(399, 144);
+            AddClass.Name = "AddClass";
+            AddClass.Size = new Size(177, 48);
+            AddClass.TabIndex = 12;
+            AddClass.Text = "Add class";
+            AddClass.UseVisualStyleBackColor = true;
+            AddClass.Click += AddClass_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1088, 586);
+            Controls.Add(AddClass);
             Controls.Add(button4);
             Controls.Add(logRichTextBox);
             Controls.Add(button3);
@@ -188,5 +200,6 @@
         private Button button3;
         private RichTextBox logRichTextBox;
         private Button button4;
+        private Button AddClass;
     }
 }

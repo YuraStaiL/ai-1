@@ -1,5 +1,6 @@
 
 using System.Drawing.Drawing2D;
+using System.Globalization;
 using System.Linq;
 
 namespace App1
@@ -372,7 +373,7 @@ namespace App1
                 sumNormalize[i] = (float) blackPixels[i] / sum;
             }
 
-            string sumNormalizeVector = String.Join(", ", sumNormalize);
+            string sumNormalizeVector = String.Join("; ", sumNormalize);
             sumNormalizeVector = $"FarynaS1 - normalize by sum: ({sumNormalizeVector})";
 
             outToLog(sumNormalizeVector);
@@ -385,7 +386,7 @@ namespace App1
                 maxNormalize[i] = (float)blackPixels[i] / maxValue;
             }
 
-            string maxNormalizeVector = String.Join(", ", maxNormalize);
+            string maxNormalizeVector = String.Join("; ", maxNormalize);
             maxNormalizeVector = $"FarynaM1 - normalize by max: ({maxNormalizeVector})";
 
             outToLog(maxNormalizeVector);
