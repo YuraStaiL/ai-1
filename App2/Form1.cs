@@ -139,10 +139,79 @@ namespace App2
 
         private void buttonSegment_Click(object sender, EventArgs e)
         {
-            int numSectors = 0;
-            int.TryParse(sectorsNumber.Text, out numSectors);
+            int sectorsCnt = 0;
+            int.TryParse(sectorsNumber.Text, out sectorsCnt);
 
-            pictureBox1.Image = imageService.ProcessImageAndDrawSectors(numSectors, pictureBox1.Image);
+            Bitmap bw = new Bitmap(pictureBox1.Image);
+            imageService.DrawSectorLines(bw, sectorsCnt);
+            int[] blackPixels = imageService.getBlackPixels(sectorsCnt, bw);
+
+            string vector = String.Join("; ", blackPixels);
+            vector = $"{Name} - vector: ({vector})";
+
+            imageService.outToLog(vector);
+
+            float[] sumNormalize = imageService.getSumNormalizeVector(blackPixels, sectorsCnt);
+            float[] maxNormalize = imageService.getMaxNormalizeVector(blackPixels, sectorsCnt);
+
+            string sumNormalizeVector = String.Join("; ", sumNormalize);
+            sumNormalizeVector = $"main - FarynaS1 - normalize by sum: ({sumNormalizeVector})";
+            imageService.outToLog(sumNormalizeVector);
+
+            string maxNormalizeVector = String.Join("; ", maxNormalize);
+            maxNormalizeVector = $"main - FarynaM1 - normalize by max: ({maxNormalizeVector})";
+            imageService.outToLog(maxNormalizeVector);
+
+            pictureBox1.Image = bw;
+
+            ArrayComparer arrayComparer = new ArrayComparer();
+            bool isFind = false;
+            foreach (InputClass classImage in classes)
+            {
+                bool findBySum = arrayComparer.Greater(sumNormalize, classImage.sumMinComponentsVector)
+                    && arrayComparer.Less(sumNormalize, classImage.sumMaxComponentsVector);
+
+                bool findByMax = arrayComparer.Greater(maxNormalize, classImage.maxMinComponentsVector)
+                    && arrayComparer.Less(maxNormalize, classImage.maxMaxComponentsVector);
+
+                if (findBySum) {
+                    imageService.outToLog("found by FarynaS1 vector");
+
+                    string s1MaxComponentsVectorJoin = String.Join("; ", classImage.sumMaxComponentsVector);
+                    s1MaxComponentsVectorJoin = $"{Text} - FarynaS1MAX - max components: ({s1MaxComponentsVectorJoin})";
+
+                    string s1MinComponentsVectorJoin = String.Join("; ", classImage.sumMinComponentsVector);
+                    s1MinComponentsVectorJoin = $"{Text} - FarynaS1MIN - min components: ({s1MinComponentsVectorJoin})";
+
+                    imageService.outToLog(s1MaxComponentsVectorJoin);
+                    imageService.outToLog(s1MinComponentsVectorJoin);
+                }
+                
+                if (findByMax) {
+                    imageService.outToLog("found by FarynaM1 vector");
+
+                    string m1MaxComponentsVectorJoin = String.Join("; ", classImage.maxMaxComponentsVector);
+                    m1MaxComponentsVectorJoin = $"{Text} - FarynaM1MAX - max components: ({m1MaxComponentsVectorJoin})";
+
+                    string m1MinComponentsVectorJoin = String.Join("; ", classImage.maxMinComponentsVector);
+                    m1MinComponentsVectorJoin = $"{Text} - FarynaM1MIN - min components: ({m1MinComponentsVectorJoin})";
+
+                    imageService.outToLog(m1MaxComponentsVectorJoin);
+                    imageService.outToLog(m1MinComponentsVectorJoin);
+                }
+
+                if (findBySum || findByMax)
+                {
+                    imageService.outToLog($"found class: {classImage.Text}");
+                    isFind = true;
+                }
+            }
+
+            if (!isFind)
+            {
+                imageService.outToLog("Class not found");
+            }
+            //pictureBox1.Image = imageService.ProcessImageAndDrawSectors(numSectors, new Bitmap(pictureBox1.Image), "main");
         }
 
         private void buttonFillSegment_Click(object sender, EventArgs e)

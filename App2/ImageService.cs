@@ -158,7 +158,7 @@ namespace App2
 
             return blackPixelCount;
         }
-        void outToLog(string output)
+        public void outToLog(string output)
         {
             if (logTextBox == null) {
                 return;
@@ -168,61 +168,103 @@ namespace App2
             logTextBox.ScrollToCaret();
         }
 
-        public Bitmap ProcessImageAndDrawSectors(int numSectors, Image image)
+        public int[] getBlackPixels(int numSectors, Bitmap bwImage)
         {
-
-            // Convert it to grayscale (if necessary)
-            Bitmap grayscaleImage = new Bitmap(image);
-
-            // Draw sector lines on the grayscale image
-            DrawSectorLines(grayscaleImage, numSectors);
-
-            // Update the pictureBox with the modified image
-
-            // Optional: process sectors to count black pixels
-            var sectors = DivideImageIntoSectors(numSectors, grayscaleImage.Size);
+            var sectors = DivideImageIntoSectors(numSectors, bwImage.Size);
             Random r = new Random();
             Color[] sectorColors = { Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Magenta };
             int[] blackPixels = new int[sectors.Count];
             for (int i = 0; i < sectors.Count; i++)
             {
-
-                int blackPixelsCnt = CountBlackPixelsInSector(grayscaleImage, sectors[i]);
+                int blackPixelsCnt = CountBlackPixelsInSector(bwImage, sectors[i]);
                 blackPixels[i] = blackPixelsCnt;
             }
 
-            string vector = String.Join(", ", blackPixels);
-            vector = $"vector: ({vector})";
+            return blackPixels;
+        }
 
-            outToLog(vector);
+        public float[] getSumNormalizeVector(int[] blackPixels, int size)
+        {
+            float[] sumNormalize = new float[size];
             int sum = blackPixels.Sum();
-            float[] sumNormalize = new float[sectors.Count];
 
-            for (int i = 0; i < sectors.Count; i++)
+            for (int i = 0; i < size; i++)
             {
                 sumNormalize[i] = (float)blackPixels[i] / sum;
             }
 
-            string sumNormalizeVector = String.Join(", ", sumNormalize);
-            sumNormalizeVector = $"FarynaS1 - normalize by sum: ({sumNormalizeVector})";
+            return sumNormalize;
+        }
 
-            outToLog(sumNormalizeVector);
-
-            float[] maxNormalize = new float[sectors.Count];
+        public float[] getMaxNormalizeVector(int[] blackPixels, int size)
+        {
+            float[] maxNormalize = new float[size];
             int maxValue = blackPixels.Max();
 
-            for (int i = 0; i < sectors.Count; i++)
+            for (int i = 0; i < size; i++)
             {
                 maxNormalize[i] = (float)blackPixels[i] / maxValue;
             }
 
-            string maxNormalizeVector = String.Join(", ", maxNormalize);
-            maxNormalizeVector = $"FarynaM1 - normalize by max: ({maxNormalizeVector})";
-
-            outToLog(maxNormalizeVector);
-
-            return grayscaleImage;
+            return maxNormalize;
         }
+
+        public float[] getMaxComponentsVector(float[,] normalizeVectorsDict)
+        {
+            int sectorCnt = normalizeVectorsDict.GetUpperBound(1) + 1;
+            float[] max = new float[sectorCnt];
+
+            for (int columnIndex = 0; columnIndex < sectorCnt; columnIndex++)
+            {
+                float[] column = new float[normalizeVectorsDict.GetUpperBound(0) + 1];
+                for (int row = 0; row < normalizeVectorsDict.GetUpperBound(0) + 1; row++)
+                {
+                    column[row] = normalizeVectorsDict[row, columnIndex];
+                }
+                max[columnIndex] = column.Max();
+            }
+
+            return max;
+        }
+
+        public float[] getMinComponentsVector(float[,] normalizeVectorsDict)
+        {
+            int sectorCnt = normalizeVectorsDict.GetUpperBound(1) + 1;
+            float[] min = new float[sectorCnt];
+
+            for (int columnIndex = 0; columnIndex < sectorCnt; columnIndex++)
+            {
+                float[] column = new float[normalizeVectorsDict.GetUpperBound(0) + 1];
+                for (int row = 0; row < normalizeVectorsDict.GetUpperBound(0) + 1; row++)
+                {
+                    column[row] = normalizeVectorsDict[row, columnIndex];
+                }
+                min[columnIndex] = column.Min();
+            }
+
+            return min;
+        }
+
+        //public Bitmap ProcessImageAndDrawSectors(int numSectors, Bitmap bwImage, string className)
+        //{
+        //    string vector = String.Join("; ", blackPixels);
+        //    vector = $"{className} - vector: ({vector})";
+
+        //    outToLog(vector);
+
+        //    string sumNormalizeVector = String.Join("; ", sumNormalize);
+        //    sumNormalizeVector = $"{className} - FarynaS1 - normalize by sum: ({sumNormalizeVector})";
+
+        //    //outToLog(sumNormalizeVector);
+
+
+        //    string maxNormalizeVector = String.Join("; ", maxNormalize);
+        //    maxNormalizeVector = $"{className} - FarynaM1 - normalize by max: ({maxNormalizeVector})";
+
+        //    //outToLog(maxNormalizeVector);
+
+        //    return bwImage;
+        //}
 
         public Bitmap bw(Image image, int threshold)
         {

@@ -129,16 +129,16 @@
             button3.Name = "button3";
             button3.Size = new Size(179, 40);
             button3.TabIndex = 8;
-            button3.Text = "Segment";
+            button3.Text = "Find Class";
             button3.UseVisualStyleBackColor = true;
             button3.Click += buttonSegment_Click;
             // 
             // logRichTextBox
             // 
             logRichTextBox.Font = new Font("Segoe UI", 11F);
-            logRichTextBox.Location = new Point(492, 293);
+            logRichTextBox.Location = new Point(352, 293);
             logRichTextBox.Name = "logRichTextBox";
-            logRichTextBox.Size = new Size(549, 254);
+            logRichTextBox.Size = new Size(1115, 416);
             logRichTextBox.TabIndex = 10;
             logRichTextBox.Text = "";
             // 
@@ -154,9 +154,9 @@
             // 
             // AddClass
             // 
-            AddClass.Location = new Point(399, 144);
+            AddClass.Location = new Point(677, 234);
             AddClass.Name = "AddClass";
-            AddClass.Size = new Size(177, 48);
+            AddClass.Size = new Size(169, 44);
             AddClass.TabIndex = 12;
             AddClass.Text = "Add class";
             AddClass.UseVisualStyleBackColor = true;
@@ -166,7 +166,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1088, 586);
+            ClientSize = new Size(1471, 721);
             Controls.Add(AddClass);
             Controls.Add(button4);
             Controls.Add(logRichTextBox);
