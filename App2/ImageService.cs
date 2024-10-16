@@ -245,6 +245,36 @@ namespace App2
             return min;
         }
 
+        public float[] getAvgComponentsVector(float[,] normalizeVectorsDict)
+        {
+            int sectorCnt = normalizeVectorsDict.GetUpperBound(1) + 1;
+            float[] avg = new float[sectorCnt];
+
+            for (int columnIndex = 0; columnIndex < sectorCnt; columnIndex++)
+            {
+                float[] column = new float[normalizeVectorsDict.GetUpperBound(0) + 1];
+                for (int row = 0; row < normalizeVectorsDict.GetUpperBound(0) + 1; row++)
+                {
+                    column[row] = normalizeVectorsDict[row, columnIndex];
+                }
+                avg[columnIndex] = column.Average();
+            }
+
+            return avg;
+        }
+
+        public float ChebyshevDistance(float[] vector1, float[] vector2)
+        {
+            float[] coefs = new float[vector1.Length];
+
+            for (int i = 0; i < vector1.Length; i++)
+            {
+                coefs[i] = Math.Abs(vector1[i] - vector2[i]);
+            }
+
+            return coefs.Max();
+        }
+
         //public Bitmap ProcessImageAndDrawSectors(int numSectors, Bitmap bwImage, string className)
         //{
         //    string vector = String.Join("; ", blackPixels);

@@ -133,7 +133,7 @@ namespace App2
                 return;
             }
 
-            
+
             pictureBox1.Image = imageService.bw(pictureBox1.Image, threshold);
         }
 
@@ -174,7 +174,8 @@ namespace App2
                 bool findByMax = arrayComparer.Greater(maxNormalize, classImage.maxMinComponentsVector)
                     && arrayComparer.Less(maxNormalize, classImage.maxMaxComponentsVector);
 
-                if (findBySum) {
+                if (findBySum)
+                {
                     imageService.outToLog("found by FarynaS1 vector");
 
                     string s1MaxComponentsVectorJoin = String.Join("; ", classImage.sumMaxComponentsVector);
@@ -186,8 +187,9 @@ namespace App2
                     imageService.outToLog(s1MaxComponentsVectorJoin);
                     imageService.outToLog(s1MinComponentsVectorJoin);
                 }
-                
-                if (findByMax) {
+
+                if (findByMax)
+                {
                     imageService.outToLog("found by FarynaM1 vector");
 
                     string m1MaxComponentsVectorJoin = String.Join("; ", classImage.maxMaxComponentsVector);
@@ -211,7 +213,6 @@ namespace App2
             {
                 imageService.outToLog("Class not found");
             }
-            //pictureBox1.Image = imageService.ProcessImageAndDrawSectors(numSectors, new Bitmap(pictureBox1.Image), "main");
         }
 
         private void buttonFillSegment_Click(object sender, EventArgs e)
@@ -337,6 +338,106 @@ namespace App2
                 classes.Add(secondaryForm); // Додаємо форму в список
                 secondaryForm.Show();
             }
+        }
+
+        private void findByDistanceBtn_Click(object sender, EventArgs e)
+        {
+            int sectorsCnt = 0;
+            int.TryParse(sectorsNumber.Text, out sectorsCnt);
+
+            Bitmap bw = new Bitmap(pictureBox1.Image);
+            imageService.DrawSectorLines(bw, sectorsCnt);
+            int[] blackPixels = imageService.getBlackPixels(sectorsCnt, bw);
+
+            string vector = String.Join("; ", blackPixels);
+            vector = $"{Name} - vector: ({vector})";
+
+            imageService.outToLog(vector);
+
+            float[] sumNormalize = imageService.getSumNormalizeVector(blackPixels, sectorsCnt);
+            float[] maxNormalize = imageService.getMaxNormalizeVector(blackPixels, sectorsCnt);
+
+            string sumNormalizeVector = String.Join("; ", sumNormalize);
+            sumNormalizeVector = $"main - FarynaS1 - normalize by sum: ({sumNormalizeVector})";
+            imageService.outToLog(sumNormalizeVector);
+
+            string maxNormalizeVector = String.Join("; ", maxNormalize);
+            maxNormalizeVector = $"main - FarynaM1 - normalize by max: ({maxNormalizeVector})";
+            imageService.outToLog(maxNormalizeVector);
+
+            pictureBox1.Image = bw;
+
+            ArrayComparer arrayComparer = new ArrayComparer();
+            bool isFind = false;
+            float[] sDistances = new float[classes.Count];
+            float[] mDistances = new float[classes.Count];
+            int i = 0;
+            foreach (InputClass classImage in classes)
+            {
+                sDistances[i] = imageService.ChebyshevDistance(classImage.FarynaS1Centr, sumNormalize);
+                mDistances[i] = imageService.ChebyshevDistance(classImage.FarynaM1Centr, maxNormalize);
+                i++;
+                //bool findBySum = arrayComparer.Greater(sumNormalize, classImage.sumMinComponentsVector)
+                //    && arrayComparer.Less(sumNormalize, classImage.sumMaxComponentsVector);
+
+                //bool findByMax = arrayComparer.Greater(maxNormalize, classImage.maxMinComponentsVector)
+                //    && arrayComparer.Less(maxNormalize, classImage.maxMaxComponentsVector);
+
+                //if (findBySum)
+                //{
+                //    imageService.outToLog("found by FarynaS1 vector");
+
+                //    string s1MaxComponentsVectorJoin = String.Join("; ", classImage.sumMaxComponentsVector);
+                //    s1MaxComponentsVectorJoin = $"{Text} - FarynaS1MAX - max components: ({s1MaxComponentsVectorJoin})";
+
+                //    string s1MinComponentsVectorJoin = String.Join("; ", classImage.sumMinComponentsVector);
+                //    s1MinComponentsVectorJoin = $"{Text} - FarynaS1MIN - min components: ({s1MinComponentsVectorJoin})";
+
+                //    imageService.outToLog(s1MaxComponentsVectorJoin);
+                //    imageService.outToLog(s1MinComponentsVectorJoin);
+                //}
+
+                //if (findByMax)
+                //{
+                //    imageService.outToLog("found by FarynaM1 vector");
+
+                //    string m1MaxComponentsVectorJoin = String.Join("; ", classImage.maxMaxComponentsVector);
+                //    m1MaxComponentsVectorJoin = $"{Text} - FarynaM1MAX - max components: ({m1MaxComponentsVectorJoin})";
+
+                //    string m1MinComponentsVectorJoin = String.Join("; ", classImage.maxMinComponentsVector);
+                //    m1MinComponentsVectorJoin = $"{Text} - FarynaM1MIN - min components: ({m1MinComponentsVectorJoin})";
+
+                //    imageService.outToLog(m1MaxComponentsVectorJoin);
+                //    imageService.outToLog(m1MinComponentsVectorJoin);
+                //}
+
+                //if (findBySum || findByMax)
+                //{
+                //    imageService.outToLog($"found class: {classImage.Text}");
+                //    isFind = true;
+                //}
+            }
+
+            for (int j = 0; j < sDistances.Length; j++)
+            {
+                imageService.outToLog($"by sum d{j} = {sDistances[j]} - {classes[j].Text}");
+            }
+
+            for (int j = 0; j < mDistances.Length; j++)
+            {
+                imageService.outToLog($"by max d{j} = {mDistances[j]} - {classes[j].Text}");
+            }
+
+            int sMinIndex = Array.IndexOf(sDistances, sDistances.Min());
+            int mMinIndex = Array.IndexOf(mDistances, mDistances.Min());
+            imageService.outToLog($"find min distance by S1Centr d{sMinIndex} = {sDistances[sMinIndex]} - {classes[sMinIndex].Text}");
+            imageService.outToLog($"find min distance by M1Centr d{mMinIndex} = {mDistances[mMinIndex]} - {classes[mMinIndex].Text}");
+
+
+            //if (!isFind)
+            //{
+            //    imageService.outToLog("Class not found");
+            //}
         }
     }
 }

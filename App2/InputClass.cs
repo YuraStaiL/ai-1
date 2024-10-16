@@ -19,6 +19,8 @@
 
         public float[] maxMinComponentsVector;
         public float[] sumMinComponentsVector;
+        public float[] FarynaS1Centr;
+        public float[] FarynaM1Centr;
 
         public InputClass(string formName, int sectorsCnt, int threshold, TextBoxBase? logTextBox = null)
         {
@@ -65,8 +67,6 @@
 
         private void btnSegment_Click(object sender, EventArgs e)
         {
-            //List<Bitmap> processedImages = new List<Bitmap>();
-            //loadedImages.Select(image => (Image)imageService.ProcessImageAndDrawSectors(sectorsCnt, imageService.bw(image, threshold)));
             flowLayoutPanel1.Controls.Clear();
             int imageIndex = 0;
             sumVectorsDict = new float[loadedImages.Count, sectorsCnt];
@@ -100,8 +100,6 @@
                 maxNormalizeVector = $"{Text} - FarynaM1 - normalize by max: ({maxNormalizeVector})";
                 imageService.outToLog(maxNormalizeVector);
 
-                //Bitmap processedImage = imageService.ProcessImageAndDrawSectors(sectorsCnt, bw, Text);
-
                 PictureBox pictureBox = new PictureBox
                 {
                     Image = bw,
@@ -110,8 +108,6 @@
                     Height = 250
                 };
                 flowLayoutPanel1.Controls.Add(pictureBox);
-                //Image bwImage = i;
-                //image = imageService.ProcessImageAndDrawSectors(sectorsCnt, image);
             }
 
             maxMaxComponentsVector = imageService.getMaxComponentsVector(maxVectorsDict);
@@ -119,6 +115,9 @@
 
             maxMinComponentsVector = imageService.getMinComponentsVector(maxVectorsDict);
             sumMinComponentsVector = imageService.getMinComponentsVector(sumVectorsDict);
+
+            FarynaM1Centr = imageService.getAvgComponentsVector(maxVectorsDict);
+            FarynaS1Centr = imageService.getAvgComponentsVector(sumVectorsDict);
 
             string m1MaxComponentsVectorJoin = String.Join("; ", maxMaxComponentsVector);
             m1MaxComponentsVectorJoin = $"{Text} - FarynaM1MAX - max components: ({m1MaxComponentsVectorJoin})";
@@ -131,12 +130,19 @@
 
             string s1MinComponentsVectorJoin = String.Join("; ", sumMinComponentsVector);
             s1MinComponentsVectorJoin = $"{Text} - FarynaS1MIN - min components: ({s1MinComponentsVectorJoin})";
+            string M1CentrJoin = String.Join("; ", FarynaM1Centr);
+            M1CentrJoin = $"{Text} - FarynaM1Centr - ({M1CentrJoin})";
 
+            string S1CentrJoin = String.Join("; ", FarynaS1Centr);
+            S1CentrJoin = $"{Text} - FarynaS1Centr - ({S1CentrJoin})";
 
             imageService.outToLog(m1MaxComponentsVectorJoin);
             imageService.outToLog(s1MaxComponentsVectorJoin);
             imageService.outToLog(m1MinComponentsVectorJoin);
             imageService.outToLog(s1MinComponentsVectorJoin);
+
+            imageService.outToLog(M1CentrJoin);
+            imageService.outToLog(S1CentrJoin);
         }
     }
 }

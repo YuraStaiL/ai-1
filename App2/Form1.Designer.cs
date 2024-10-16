@@ -40,6 +40,7 @@
             logRichTextBox = new RichTextBox();
             button4 = new Button();
             AddClass = new Button();
+            findByDistanceBtn = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -162,11 +163,22 @@
             AddClass.UseVisualStyleBackColor = true;
             AddClass.Click += AddClass_Click;
             // 
+            // findByDistanceBtn
+            // 
+            findByDistanceBtn.Location = new Point(1047, 44);
+            findByDistanceBtn.Name = "findByDistanceBtn";
+            findByDistanceBtn.Size = new Size(140, 39);
+            findByDistanceBtn.TabIndex = 13;
+            findByDistanceBtn.Text = "Find By Distance";
+            findByDistanceBtn.UseVisualStyleBackColor = true;
+            findByDistanceBtn.Click += findByDistanceBtn_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1471, 721);
+            Controls.Add(findByDistanceBtn);
             Controls.Add(AddClass);
             Controls.Add(button4);
             Controls.Add(logRichTextBox);
@@ -201,5 +213,6 @@
         private RichTextBox logRichTextBox;
         private Button button4;
         private Button AddClass;
+        private Button findByDistanceBtn;
     }
 }
