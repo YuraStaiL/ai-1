@@ -30,10 +30,14 @@
         {
             savePattern = new Button();
             findPattern = new Button();
-            trainPicture = new PictureBox();
-            testPicture = new PictureBox();
-            ((System.ComponentModel.ISupportInitialize)trainPicture).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)testPicture).BeginInit();
+            pictureBoxTraining = new PictureBox();
+            pictureBoxTest = new PictureBox();
+            logRichTextBox = new RichTextBox();
+            textBoxSeparationDistance = new TextBox();
+            label1 = new Label();
+            label2 = new Label();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxTraining).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxTest).BeginInit();
             SuspendLayout();
             // 
             // savePattern
@@ -58,44 +62,91 @@
             findPattern.UseVisualStyleBackColor = true;
             findPattern.Click += findPattern_Click;
             // 
-            // trainPicture
+            // pictureBoxTraining
             // 
-            trainPicture.Location = new Point(47, 28);
-            trainPicture.Name = "trainPicture";
-            trainPicture.Size = new Size(487, 454);
-            trainPicture.TabIndex = 2;
-            trainPicture.TabStop = false;
+            pictureBoxTraining.Location = new Point(47, 28);
+            pictureBoxTraining.Name = "pictureBoxTraining";
+            pictureBoxTraining.Size = new Size(487, 454);
+            pictureBoxTraining.TabIndex = 2;
+            pictureBoxTraining.TabStop = false;
             // 
-            // testPicture
+            // pictureBoxTest
             // 
-            testPicture.Location = new Point(540, 28);
-            testPicture.Name = "testPicture";
-            testPicture.Size = new Size(487, 454);
-            testPicture.TabIndex = 3;
-            testPicture.TabStop = false;
+            pictureBoxTest.Location = new Point(540, 28);
+            pictureBoxTest.Name = "pictureBoxTest";
+            pictureBoxTest.Size = new Size(487, 454);
+            pictureBoxTest.TabIndex = 3;
+            pictureBoxTest.TabStop = false;
+            // 
+            // logRichTextBox
+            // 
+            logRichTextBox.Font = new Font("Consolas", 15F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            logRichTextBox.Location = new Point(47, 581);
+            logRichTextBox.Name = "logRichTextBox";
+            logRichTextBox.Size = new Size(980, 159);
+            logRichTextBox.TabIndex = 4;
+            logRichTextBox.Text = "";
+            // 
+            // textBoxSeparationDistance
+            // 
+            textBoxSeparationDistance.Font = new Font("Segoe UI", 15F);
+            textBoxSeparationDistance.Location = new Point(448, 513);
+            textBoxSeparationDistance.Name = "textBoxSeparationDistance";
+            textBoxSeparationDistance.Size = new Size(185, 34);
+            textBoxSeparationDistance.TabIndex = 5;
+            textBoxSeparationDistance.Text = "40";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 15F);
+            label1.Location = new Point(629, 519);
+            label1.Name = "label1";
+            label1.Size = new Size(33, 28);
+            label1.TabIndex = 6;
+            label1.Text = "px";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 15F);
+            label2.Location = new Point(448, 550);
+            label2.Name = "label2";
+            label2.Size = new Size(186, 28);
+            label2.TabIndex = 7;
+            label2.Text = "Separation Distance";
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1072, 575);
-            Controls.Add(testPicture);
-            Controls.Add(trainPicture);
+            ClientSize = new Size(1072, 743);
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Controls.Add(textBoxSeparationDistance);
+            Controls.Add(logRichTextBox);
+            Controls.Add(pictureBoxTest);
+            Controls.Add(pictureBoxTraining);
             Controls.Add(findPattern);
             Controls.Add(savePattern);
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;
-            ((System.ComponentModel.ISupportInitialize)trainPicture).EndInit();
-            ((System.ComponentModel.ISupportInitialize)testPicture).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxTraining).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxTest).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
         private Button savePattern;
         private Button findPattern;
-        private PictureBox trainPicture;
-        private PictureBox testPicture;
+        private PictureBox pictureBoxTraining;
+        private PictureBox pictureBoxTest;
+        private RichTextBox logRichTextBox;
+        private TextBox textBoxSeparationDistance;
+        private Label label1;
+        private Label label2;
     }
 }
