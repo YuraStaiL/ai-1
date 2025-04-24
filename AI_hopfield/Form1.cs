@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace App2
 {
-    public partial class Hopfield : Form
+    public partial class Form1 : Form
     {
         private Rectangle cropRect;
         private bool isCropping = false;
@@ -13,11 +13,10 @@ namespace App2
         private MemoryStream ms;
         private Image OriginalImg;
         private ImageService imageService;
-        private HopfieldNetwork hopfieldNetwork;
 
         private List<InputClass> classes = new List<InputClass>();
 
-        public Hopfield()
+        public Form1()
         {
             InitializeComponent();
             imageService = new ImageService(logRichTextBox);
@@ -149,93 +148,82 @@ namespace App2
             return binary;
         }
 
-        private int[] BinarizeFloat(float[] features, float regulator)
-        {
-            regulator = features.Average();
-            int[] binary = new int[features.Length];
-
-            for (int i = 0; i < features.Length; i++)
-                binary[i] = features[i] >= regulator ? 1 : -1;
-
-            return binary;
-        }
-
         private void buttonSegment_Click(object sender, EventArgs e)
         {
             int sectorsCnt = 0;
             int.TryParse(sectorsNumber.Text, out sectorsCnt);
-
-            float binarizeRegulator = 0;
-            float.TryParse(binarizeTextBox.Text, out binarizeRegulator);
 
             Bitmap bw = new Bitmap(pictureBox1.Image);
             imageService.DrawSectorLines(bw, sectorsCnt);
             int[] blackPixels = imageService.getBlackPixels(sectorsCnt, bw);
 
             string vector = String.Join("; ", blackPixels);
-            vector = $"Loaded image - vector: ({vector})";
+            vector = $"{Name} - vector: ({vector})";
 
             imageService.outToLog(vector);
 
-            //float[] maxNormalize = imageService.getMaxNormalizeVector(blackPixels, sectorsCnt);
             float[] sumNormalize = imageService.getSumNormalizeVector(blackPixels, sectorsCnt);
-            int[] binarized = BinarizeFloat(sumNormalize, binarizeRegulator);
-
-            //string maxNormalizeVector = String.Join("; ", maxNormalize);
-            //maxNormalizeVector = $"Loaded image - normalize by max: ({maxNormalizeVector})";
-            //imageService.outToLog(maxNormalizeVector);
+            float[] maxNormalize = imageService.getMaxNormalizeVector(blackPixels, sectorsCnt);
 
             string sumNormalizeVector = String.Join("; ", sumNormalize);
-            sumNormalizeVector = $"Loaded image - normalize by sum: ({sumNormalizeVector})";
+            sumNormalizeVector = $"main - FarynaS1 - normalize by sum: ({sumNormalizeVector})";
             imageService.outToLog(sumNormalizeVector);
 
-            string binarizedJoin = String.Join("; ", binarized);
-            string binarizedText = $"Loaded image - binarized: ({binarizedJoin})";
-
-            imageService.outToLog(binarizedText);
-
-    
+            string maxNormalizeVector = String.Join("; ", maxNormalize);
+            maxNormalizeVector = $"main - FarynaM1 - normalize by max: ({maxNormalizeVector})";
+            imageService.outToLog(maxNormalizeVector);
 
             pictureBox1.Image = bw;
 
+            ArrayComparer arrayComparer = new ArrayComparer();
+            bool isFind = false;
             foreach (InputClass classImage in classes)
             {
-                if (Enumerable.SequenceEqual(binarized, classImage.binarized))
+                bool findBySum = arrayComparer.Greater(sumNormalize, classImage.sumMinComponentsVector)
+                    && arrayComparer.Less(sumNormalize, classImage.sumMaxComponentsVector);
+
+                bool findByMax = arrayComparer.Greater(maxNormalize, classImage.maxMinComponentsVector)
+                    && arrayComparer.Less(maxNormalize, classImage.maxMaxComponentsVector);
+
+                if (findBySum)
                 {
-                    imageService.outToLog($"Found class: {classImage.Text}");
-                    return;
+                    imageService.outToLog("found by FarynaS1 vector");
+
+                    string s1MaxComponentsVectorJoin = String.Join("; ", classImage.sumMaxComponentsVector);
+                    s1MaxComponentsVectorJoin = $"{Text} - FarynaS1MAX - max components: ({s1MaxComponentsVectorJoin})";
+
+                    string s1MinComponentsVectorJoin = String.Join("; ", classImage.sumMinComponentsVector);
+                    s1MinComponentsVectorJoin = $"{Text} - FarynaS1MIN - min components: ({s1MinComponentsVectorJoin})";
+
+                    imageService.outToLog(s1MaxComponentsVectorJoin);
+                    imageService.outToLog(s1MinComponentsVectorJoin);
+                }
+
+                if (findByMax)
+                {
+                    imageService.outToLog("found by FarynaM1 vector");
+
+                    string m1MaxComponentsVectorJoin = String.Join("; ", classImage.maxMaxComponentsVector);
+                    m1MaxComponentsVectorJoin = $"{Text} - FarynaM1MAX - max components: ({m1MaxComponentsVectorJoin})";
+
+                    string m1MinComponentsVectorJoin = String.Join("; ", classImage.maxMinComponentsVector);
+                    m1MinComponentsVectorJoin = $"{Text} - FarynaM1MIN - min components: ({m1MinComponentsVectorJoin})";
+
+                    imageService.outToLog(m1MaxComponentsVectorJoin);
+                    imageService.outToLog(m1MinComponentsVectorJoin);
+                }
+
+                if (findBySum || findByMax)
+                {
+                    imageService.outToLog($"found class: {classImage.Text}");
+                    isFind = true;
                 }
             }
 
-
-            int[] result = hopfieldNetwork.Recognize(binarized);
-
-            string resultJoin = String.Join("; ", result);
-            string resulText = $"Loaded image - recognize vector: ({resultJoin})";
-            imageService.outToLog(resulText);
-
-            int classIndex = 0;
-
-            this.dataGridView.DataSource = null;
-            hopfieldNetwork.DisplayWeights(dataGridView);
-
-            List<int[]> patterns = new List<int[]>();
-            foreach (InputClass classImage in classes)
+            if (!isFind)
             {
-                patterns.Add(classImage.binarized);
+                imageService.outToLog("Class not found");
             }
-
-            foreach (InputClass classImage in classes)
-            {
-                if (Enumerable.SequenceEqual(result, classImage.binarized))
-                {
-                    imageService.outToLog($"Found class: {classImage.Text}");
-                    return;
-                }
-                ++classIndex;
-            }
-            
-            imageService.outToLog("Class not found");
         }
 
         private void buttonFillSegment_Click(object sender, EventArgs e)
@@ -348,9 +336,6 @@ namespace App2
                 return;
             }
 
-            float binarizeRegulator = 0;
-            float.TryParse(binarizeTextBox.Text, out binarizeRegulator);
-
             int.TryParse(sectorsNumber.Text, out numSectors);
             // Викликаємо діалог для введення назви форми
             InputDialog inputDialog = new InputDialog();
@@ -359,7 +344,7 @@ namespace App2
                 string formName = inputDialog.FormName;
 
                 // Створюємо нове додаткове вікно з переданою назвою
-                InputClass secondaryForm = new(formName, numSectors, threshold, logRichTextBox, binarizeRegulator);
+                InputClass secondaryForm = new(formName, numSectors, threshold, logRichTextBox);
                 secondaryForm.FormClosed += InputClass_FormClosed; // Для відслідковування закриття форми
                 classes.Add(secondaryForm); // Додаємо форму в список
                 secondaryForm.Show();
@@ -464,39 +449,6 @@ namespace App2
             //{
             //    imageService.outToLog("Class not found");
             //}
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void binarizeTextBox_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void trainButton_Click(object sender, EventArgs e)
-        {
-            int sectorsCnt = 0;
-            int.TryParse(sectorsNumber.Text, out sectorsCnt);
-
-            float binarizeRegulator = 0;
-            float.TryParse(binarizeTextBox.Text, out binarizeRegulator);
-
-
-            List<int[]> patterns = new List<int[]>();
-            foreach (InputClass classImage in classes)
-            {
-                patterns.Add(classImage.binarized);
-            }
-
-            int vectorSize = patterns[0].Length;
-            hopfieldNetwork = new HopfieldNetwork(vectorSize);
-            hopfieldNetwork.Train(patterns);
-
-            this.dataGridView.DataSource = null;
-            hopfieldNetwork.DisplayWeights(dataGridView);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace App2
 {
-    partial class Hopfield
+    partial class Form1
     {
         /// <summary>
         ///  Required designer variable.
@@ -38,20 +38,15 @@
             label2 = new Label();
             button3 = new Button();
             logRichTextBox = new RichTextBox();
+            button4 = new Button();
             AddClass = new Button();
-            binarizeTextBox = new TextBox();
-            label3 = new Label();
-            dataGridView = new DataGridView();
-            dataGridView2 = new DataGridView();
-            trainButton = new Button();
+            findByDistanceBtn = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dataGridView).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
             SuspendLayout();
             // 
             // button1
             // 
-            button1.Location = new Point(677, 23);
+            button1.Location = new Point(677, 44);
             button1.Name = "button1";
             button1.Size = new Size(179, 40);
             button1.TabIndex = 0;
@@ -73,7 +68,7 @@
             // 
             // btnConvert
             // 
-            btnConvert.Location = new Point(677, 80);
+            btnConvert.Location = new Point(677, 101);
             btnConvert.Name = "btnConvert";
             btnConvert.Size = new Size(179, 40);
             btnConvert.TabIndex = 2;
@@ -84,7 +79,7 @@
             // txtThreshold
             // 
             txtThreshold.Font = new Font("Segoe UI", 20F);
-            txtThreshold.Location = new Point(677, 151);
+            txtThreshold.Location = new Point(677, 172);
             txtThreshold.Name = "txtThreshold";
             txtThreshold.Size = new Size(179, 43);
             txtThreshold.TabIndex = 3;
@@ -94,7 +89,7 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 15F);
-            label1.Location = new Point(677, 123);
+            label1.Location = new Point(677, 144);
             label1.Name = "label1";
             label1.Size = new Size(141, 28);
             label1.TabIndex = 4;
@@ -102,7 +97,7 @@
             // 
             // button2
             // 
-            button2.Location = new Point(862, 23);
+            button2.Location = new Point(862, 44);
             button2.Name = "button2";
             button2.Size = new Size(179, 40);
             button2.TabIndex = 5;
@@ -113,7 +108,7 @@
             // sectorsNumber
             // 
             sectorsNumber.Font = new Font("Segoe UI", 20F);
-            sectorsNumber.Location = new Point(862, 151);
+            sectorsNumber.Location = new Point(862, 172);
             sectorsNumber.Name = "sectorsNumber";
             sectorsNumber.Size = new Size(179, 43);
             sectorsNumber.TabIndex = 6;
@@ -123,7 +118,7 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 15F);
-            label2.Location = new Point(862, 123);
+            label2.Location = new Point(862, 144);
             label2.Name = "label2";
             label2.Size = new Size(173, 28);
             label2.TabIndex = 7;
@@ -131,7 +126,7 @@
             // 
             // button3
             // 
-            button3.Location = new Point(862, 80);
+            button3.Location = new Point(862, 101);
             button3.Name = "button3";
             button3.Size = new Size(179, 40);
             button3.TabIndex = 8;
@@ -142,11 +137,21 @@
             // logRichTextBox
             // 
             logRichTextBox.Font = new Font("Segoe UI", 11F);
-            logRichTextBox.Location = new Point(732, 293);
+            logRichTextBox.Location = new Point(352, 293);
             logRichTextBox.Name = "logRichTextBox";
-            logRichTextBox.Size = new Size(735, 416);
+            logRichTextBox.Size = new Size(1115, 416);
             logRichTextBox.TabIndex = 10;
             logRichTextBox.Text = "";
+            // 
+            // button4
+            // 
+            button4.Location = new Point(862, 236);
+            button4.Name = "button4";
+            button4.Size = new Size(179, 40);
+            button4.TabIndex = 11;
+            button4.Text = "Fill Segment";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += buttonFillSegment_Click;
             // 
             // AddClass
             // 
@@ -158,63 +163,24 @@
             AddClass.UseVisualStyleBackColor = true;
             AddClass.Click += AddClass_Click;
             // 
-            // binarizeTextBox
+            // findByDistanceBtn
             // 
-            binarizeTextBox.Font = new Font("Segoe UI", 20F);
-            binarizeTextBox.Location = new Point(862, 234);
-            binarizeTextBox.Name = "binarizeTextBox";
-            binarizeTextBox.Size = new Size(179, 43);
-            binarizeTextBox.TabIndex = 13;
-            binarizeTextBox.Text = "0,5";
-            binarizeTextBox.TextChanged += binarizeTextBox_TextChanged;
+            findByDistanceBtn.Location = new Point(1047, 44);
+            findByDistanceBtn.Name = "findByDistanceBtn";
+            findByDistanceBtn.Size = new Size(140, 39);
+            findByDistanceBtn.TabIndex = 13;
+            findByDistanceBtn.Text = "Find By Distance";
+            findByDistanceBtn.UseVisualStyleBackColor = true;
+            findByDistanceBtn.Click += findByDistanceBtn_Click;
             // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Segoe UI", 15F);
-            label3.Location = new Point(862, 203);
-            label3.Name = "label3";
-            label3.Size = new Size(80, 28);
-            label3.TabIndex = 14;
-            label3.Text = "Binarize";
-            label3.Click += label3_Click;
-            // 
-            // dataGridView
-            // 
-            dataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView.Location = new Point(12, 414);
-            dataGridView.Name = "dataGridView";
-            dataGridView.Size = new Size(692, 231);
-            dataGridView.TabIndex = 15;
-            // 
-            // dataGridView2
-            // 
-            dataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView2.Location = new Point(1047, 265);
-            dataGridView2.Name = "dataGridView2";
-            dataGridView2.Size = new Size(32, 12);
-            dataGridView2.TabIndex = 16;
-            // 
-            // trainButton
-            // 
-            trainButton.Location = new Point(1047, 80);
-            trainButton.Name = "trainButton";
-            trainButton.Size = new Size(141, 40);
-            trainButton.TabIndex = 17;
-            trainButton.Text = "Train";
-            trainButton.UseVisualStyleBackColor = true;
-            trainButton.Click += trainButton_Click;
-            // 
-            // Hopfield
+            // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1471, 721);
-            Controls.Add(trainButton);
-            Controls.Add(dataGridView);
-            Controls.Add(label3);
-            Controls.Add(binarizeTextBox);
+            Controls.Add(findByDistanceBtn);
             Controls.Add(AddClass);
+            Controls.Add(button4);
             Controls.Add(logRichTextBox);
             Controls.Add(button3);
             Controls.Add(label2);
@@ -225,13 +191,10 @@
             Controls.Add(btnConvert);
             Controls.Add(pictureBox1);
             Controls.Add(button1);
-            Controls.Add(dataGridView2);
-            Name = "Hopfield";
-            Text = "Hopfield Network";
+            Name = "Form1";
+            Text = "Lab 1";
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dataGridView).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dataGridView2).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -248,11 +211,8 @@
         private Label label2;
         private Button button3;
         private RichTextBox logRichTextBox;
+        private Button button4;
         private Button AddClass;
-        private TextBox binarizeTextBox;
-        private Label label3;
-        private DataGridView dataGridView;
-        private DataGridView dataGridView2;
-        private Button trainButton;
+        private Button findByDistanceBtn;
     }
 }

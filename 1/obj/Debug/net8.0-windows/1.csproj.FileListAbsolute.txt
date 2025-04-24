@@ -14,3 +14,4 @@ E:\Study\AI_labs\1\obj\Debug\net8.0-windows\refint\1.dll
 E:\Study\AI_labs\1\obj\Debug\net8.0-windows\1.pdb
 E:\Study\AI_labs\1\obj\Debug\net8.0-windows\1.genruntimeconfig.cache
 E:\Study\AI_labs\1\obj\Debug\net8.0-windows\ref\1.dll
+E:\Study\AI_labs\1\obj\Debug\net8.0-windows\1.sourcelink.json
